@@ -1,0 +1,36 @@
+; Worksheet 3 Subroutine
+; Written by Jared Dyreson
+
+%define INGEST_NUMBER 15
+section .data
+variable: db INGEST_NUMBER, 10
+hextable: db "0123456789ABCDEF"
+section .text
+global _start
+
+_start:
+jmp cast_int_to_hex
+cast_int_to_hex:
+cmp byte[variable], 16
+jge exit_exceeds_bounds_exception
+mov rdi, 1
+mov al, byte[variable]
+lea rbx, [hextable]
+xlat
+mov byte[variable], al
+mov rsi, variable
+mov rax, 1
+mov rdx, 2
+syscall
+
+jmp exit_succesfully
+
+exit_exceeds_bounds_exception:
+mov rax, 60
+mov rdi, 1
+syscall
+
+exit_succesfully:
+mov rax, 60
+mov rdi, 0
+syscall
